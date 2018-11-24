@@ -36,30 +36,44 @@ namespace example
 
     bool View::load_image (const char * image_path)
     {	
-		
-		int iwidth, iheight, channels;
-		unsigned char* loaded_image = SOIL_load_image(image_path, &iwidth, &iheight, &channels, SOIL_LOAD_RGBA);
+		// Declaring image data variables
+		int width, height, channels;
+		// Loading image
+		unsigned char* loaded_image = SOIL_load_image(image_path, &width, &height, &channels, SOIL_LOAD_RGBA);
 
+		// Check if the image has loaded correctly
 		if (0 != loaded_image)
 		{	
-			image.reset(new Pixel_Buffer(iwidth, iheight));
+			// Create a new pixel buffer with image data
+			image.reset(new Pixel_Buffer(width, height));
 
+			// Pixel buffer for the loaded image
 			Pixel_Buffer::Pixel * loaded_image_pixels = reinterpret_cast< Pixel_Buffer::Pixel * >(loaded_image);
-			Pixel_Buffer::Pixel * loaded_image_pixels_end = loaded_image_pixels + iwidth * iheight;
+			// Last pixel buffer
+			Pixel_Buffer::Pixel * loaded_image_pixels_end = loaded_image_pixels + width * height;
+			// Take the image pixels into the buffer
 			Pixel_Buffer::Pixel * image_buffer_pixels = image->pixels();
 
+			// Loop through pixels and add them to the buffer
 			while (loaded_image_pixels <  loaded_image_pixels_end)
 			{
 				*image_buffer_pixels++ = *loaded_image_pixels++;
 			}
 
+			// Clear background
 			rasterizer.clear(255, 255, 255);
+			// Free data for further use
 			SOIL_free_image_data(loaded_image);
+
+			// Image has loaded correctly
 			return true;
 		}
 		else
 		{	
+			// Image has not loaded, clear background to red
 			rasterizer.clear(255, 0, 0);
+
+			// Image has not loaded correctly
 			return false;
 		}
 
